@@ -1,17 +1,27 @@
 from monkeylearn import MonkeyLearn
-import json
-import 
+import web_scraper
  
-
+dic={}
 def jprint(obj):
-    print(len(obj))
+    #print(len(obj))
     for i in range(len(obj)):
-        temp=obj[i]['classifications'];temp=temp[0]['confidence']
-        res=obj[i]['classifications'];res=res[0]['tag_name']
-        print("Results show that the product is {} % {}".format(temp*100,res))
+        percentage=obj[i]['classifications'];percentage=percentage[0]['confidence']
+        comment=obj[i]['classifications'];comment=comment[0]['tag_name']
+        print("Results show that the product is {} % {}".format(percentage*100,comment))
+        if comment not in dic.keys():
+            dic[comment]=[percentage*100]
+        elif comment in dic.keys():
+            dic[comment].append(percentage*100)
 
-ml = MonkeyLearn('7cf596afbe22f32ca0a88479f5731feeba294f30')
-data = ['The restaurant was great!', 'The curtains were disgusting']
+ml = MonkeyLearn('640763d72f139f0d18caadb084a0ad3af213d920')
+data = web_scraper.cat()
 model_id = 'cl_pi3C7JiL'
 result = ml.classifiers.classify(model_id, data)
 jprint(result.body)
+#print(dic)
+total_comments=[];
+for i in dic.values():
+    total_comments.extend(i)
+for i in dic.keys():
+    print(i,':',round(sum(dic[i])/sum(total_comments)*100,3))
+    #print(i,':',round(sum(dic[i])/len(dic[i]),2))
